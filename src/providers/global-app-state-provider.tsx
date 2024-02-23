@@ -1,16 +1,17 @@
 'use client'
 
-import { createContext } from 'react'
+import { createContext, useState } from 'react'
 
-const GlobalAppStateContext = createContext({})
+export const GlobalAppStateContext = createContext({})
 
 export default function GlobalAppStateProvider ({
   children
 }: {
   children: React.ReactNode
 }) {
+  const [navbarOpen, setNavbarOpen] = useState<boolean>(false)
   return (
-    <GlobalAppStateContext.Provider value={{}}>
+    <GlobalAppStateContext.Provider value={{ navbarOpen, setNavbarOpen }}>
       {children}
     </GlobalAppStateContext.Provider>
   )
