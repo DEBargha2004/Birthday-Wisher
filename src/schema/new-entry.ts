@@ -5,12 +5,13 @@ export const wishSchema = Z.object({
   lastname: Z.string().optional(),
   dob: Z.date({ required_error: 'Date of Birth is required' }),
   message: Z.string().optional(),
-  whatsapp: Z.union([
+  phone: Z.union([
     Z.string({
-      required_error: 'Whatsapp number is required'
+      required_error: 'Phone number is required'
     }),
     Z.number({
-      required_error: 'Whatsapp number is required'
+      required_error: 'Phone number is required'
     })
-  ])
+  ]),
+  email: Z.string().optional()
 })
