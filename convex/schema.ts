@@ -7,7 +7,8 @@ export default defineSchema({
     firstname: v.string(),
     lastname: v.optional(v.string()),
     email: v.string(),
-    phone: v.optional(v.number())
+    phone: v.optional(v.number()),
+    resend_api_key: v.optional(v.string())
   }),
   wishes: defineTable({
     creator_id: v.string(),
@@ -18,13 +19,5 @@ export default defineSchema({
     message: v.optional(v.string()),
     phone: v.number(),
     last_wished: v.optional(v.string())
-  }).index('by_birthday', ['birthday']),
-  profile: defineTable({
-    user_id: v.string(),
-    firstname: v.string(),
-    lastname: v.optional(v.string()),
-    email: v.string(),
-    phone: v.number(),
-    resend_api_key: v.string()
-  })
+  }).index('by_birthday', ['birthday'])
 })

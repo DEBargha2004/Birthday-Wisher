@@ -11,5 +11,9 @@ export const sidebarItems: SidebarItem[] = [
   {
     title: 'New',
     link: '/new-entry'
+  },
+  {
+    title: 'Profile',
+    link: '/profile'
   }
 ]
