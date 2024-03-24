@@ -31,7 +31,7 @@ export default async function handleNewWishSubmit (
         lastname: data.lastname || '',
         dob: new Date(data.dob).getTime(),
         message: data.message || '',
-        whatsapp: Number(data.phone)
+        phone: Number(data.phone)
       })
       return {
         success: true,

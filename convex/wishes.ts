@@ -24,7 +24,7 @@ export const createWish = mutation({
     lastname: v.string(),
     dob: v.number(),
     message: v.string(),
-    whatsapp: v.number()
+    phone: v.number()
   },
   handler: async (ctx, args) => {
     const birthday_formatted = format(args.dob, 'dd MMM')
@@ -37,7 +37,7 @@ export const createWish = mutation({
       birthday: birthday_formatted,
       dob: dob_formatted,
       message: args.message,
-      whatsapp: args.whatsapp
+      phone: args.phone
     })
   }
 })
@@ -49,7 +49,7 @@ export const checkWish = mutation({
   handler: async (ctx, args) => {
     const wish = await ctx.db
       .query('wishes')
-      .filter(q => q.eq(q.field('whatsapp'), args.whatsapp))
+      .filter(q => q.eq(q.field('phone'), args.whatsapp))
       .first()
     return wish
   }
