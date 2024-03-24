@@ -25,10 +25,6 @@ export const wishesTable: WishTableItem[] = [
     title: 'Message'
   },
   {
-    id: 'whatsapp',
-    title: 'Whatsapp'
-  },
-  {
     id: 'last_wished',
     title: 'Last Wished'
   }

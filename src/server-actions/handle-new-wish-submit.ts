@@ -13,7 +13,7 @@ export default async function handleNewWishSubmit (
   const user = await currentUser()
 
   const wish = await fetchMutation(api.wishes.checkWish, {
-    whatsapp: Number(data.whatsapp)
+    whatsapp: Number(data.phone)
   })
   if (user?.id) {
     if (wish) {
@@ -31,7 +31,7 @@ export default async function handleNewWishSubmit (
         lastname: data.lastname || '',
         dob: new Date(data.dob).getTime(),
         message: data.message || '',
-        whatsapp: Number(data.whatsapp)
+        whatsapp: Number(data.phone)
       })
       return {
         success: true,

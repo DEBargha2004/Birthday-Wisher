@@ -64,7 +64,9 @@ export const makeWish = internalMutation({
       .filter(q => q.eq(q.field('birthday'), date))
       .collect()
     const uniq_creators_wish = _.uniqBy(wishes, 'creator_id')
+
     const uniq_creators_id = uniq_creators_wish.map(w => w.creator_id)
+
     const uniq_creators_info = await Promise.all(
       uniq_creators_id.map(async id => {
         const user = await ctx.db
