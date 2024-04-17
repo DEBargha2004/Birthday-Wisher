@@ -6,6 +6,7 @@ import { api } from '../../convex/_generated/api'
 import { currentUser } from '@clerk/nextjs'
 import { ResponseType } from '@/types/response'
 import { fetchMutation } from 'convex/nextjs'
+import { format } from 'date-fns'
 
 export default async function handleNewWishSubmit (
   data: z.infer<typeof wishSchema>
@@ -25,13 +26,17 @@ export default async function handleNewWishSubmit (
         }
       }
     } else {
+      console.log(data)
+
       await fetchMutation(api.wishes.createWish, {
         creator_id: user.id,
         firstname: data.firstname,
         lastname: data.lastname || '',
-        dob: new Date(data.dob).getTime(),
+        dob: data.dob.toUTCString(),
+        birthday: format(new Date(data.dob), 'dd MMM'),
         message: data.message || '',
-        phone: Number(data.phone)
+        phone: Number(data.phone),
+        email: data.email
       })
       return {
         success: true,

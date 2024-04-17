@@ -14,7 +14,7 @@ import { userProfileSchema } from '@/schema/user-profile'
 import { useUser } from '@clerk/nextjs'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from 'convex/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { api } from '../../../../convex/_generated/api'
@@ -23,6 +23,7 @@ import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 
 export default function Page () {
+  const [showApiKey, setShowApiKey] = useState(false)
   const { user } = useUser()
   const router = useRouter()
   const form = useForm<z.infer<typeof userProfileSchema>>({
@@ -146,8 +147,20 @@ export default function Page () {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Resend API Key</FormLabel>
-                <FormControl>
-                  <Input placeholder='Resend API Key' {...field} />
+                <FormControl className=''>
+                  <div className='w-full flex flex-col items-start  gap-2'>
+                    <Input
+                      placeholder='Resend API Key'
+                      {...field}
+                      type={showApiKey ? 'text' : 'password'}
+                    />
+                    <Input
+                      type='checkbox'
+                      className='h-3 mx-0 w-fit '
+                      checked={showApiKey}
+                      onChange={() => setShowApiKey(!showApiKey)}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -18,6 +18,7 @@ export default defineSchema({
     dob: v.string(),
     message: v.optional(v.string()),
     phone: v.number(),
-    last_wished: v.optional(v.string())
+    last_wished: v.optional(v.string()),
+    email: v.optional(v.string())
   }).index('by_birthday', ['birthday'])
 })

@@ -16,7 +16,7 @@ import { Button } from '../ui/button'
 import { CalendarDays, Loader2 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Calendar } from '../ui/calendar'
-import { ChangeEvent, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { format, parse } from 'date-fns'
 import {
   Select,
@@ -35,14 +35,7 @@ export default function EntryForm ({
   onSubmit: (data: z.infer<typeof wishSchema>) => void
 }) {
   const form = useForm<z.infer<typeof wishSchema>>({
-    resolver: zodResolver(wishSchema),
-    defaultValues: defaultValues || {
-      firstname: '',
-      lastname: '',
-      dob: undefined,
-      message: '',
-      phone: ''
-    }
+    resolver: zodResolver(wishSchema)
   })
 
   const [dateObj, setDateObj] = useState({
@@ -66,6 +59,15 @@ export default function EntryForm ({
       'December'
     ]
   }, [])
+
+  useEffect(() => {
+    form.setValue('dob', new Date(defaultValues?.dob || ''))
+    form.setValue('phone', defaultValues?.phone || '')
+    form.setValue('email', defaultValues?.email || '')
+    form.setValue('firstname', defaultValues?.firstname || '')
+    form.setValue('lastname', defaultValues?.lastname || '')
+    form.setValue('message', defaultValues?.message || '')
+  }, [defaultValues])
 
   return (
     <main className='flex justify-center items-center'>
@@ -274,7 +276,7 @@ export default function EntryForm ({
             />
             <Button type='submit' className='w-full '>
               {form.formState.isSubmitting ? (
-                <Loader2 className='animate-spin' />
+                <Loader2 className='animate-spin mr-2 h-4 w-4' />
               ) : null}
               Submit
             </Button>
