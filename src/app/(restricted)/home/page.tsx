@@ -32,6 +32,12 @@ import {
 } from '@/components/ui/dialog'
 import { Id } from '../../../../convex/_generated/dataModel'
 import Link from 'next/link'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 export default function Page () {
   const { user } = useUser()
@@ -63,6 +69,7 @@ export default function Page () {
       })
     }
   }, [user])
+
   return (
     <main className='px-4 pt-8'>
       <Table>
@@ -79,9 +86,24 @@ export default function Page () {
             <TableRow key={wish._id}>
               {wishesTable.map(item => (
                 <TableCell key={item.id} className='max-w-[400px]'>
-                  <div className='line-clamp-6'>
-                    {item.process(wish[item.id as keyof typeof wish]) || '—'}
-                  </div>
+                  {item.id === 'message' ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className='line-clamp-6 whitespace-pre-wrap'>
+                            {item.process(wish[item.id as keyof typeof wish]) ||
+                              '—'}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className='whitespace-pre-wrap max-w-[500px] max-h-[250px] overflow-auto'>
+                          {item.process(wish[item.id as keyof typeof wish]) ||
+                            '—'}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    item.process(wish[item.id as keyof typeof wish]) || '—'
+                  )}
                 </TableCell>
               ))}
               <TableCell>
