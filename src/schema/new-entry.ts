@@ -13,5 +13,5 @@ export const wishSchema = Z.object({
       required_error: 'Phone number is required'
     })
   ]),
-  email: Z.string().optional()
+  email: Z.string()
 })

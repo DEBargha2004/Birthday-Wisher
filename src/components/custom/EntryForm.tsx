@@ -223,7 +223,7 @@ export default function EntryForm ({
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       id={field.name}
