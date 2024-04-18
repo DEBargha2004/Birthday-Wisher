@@ -26,13 +26,13 @@ export default async function handleNewWishSubmit (
         }
       }
     } else {
-      console.log(data)
+      // console.log(data)
 
       await fetchMutation(api.wishes.createWish, {
         creator_id: user.id,
         firstname: data.firstname,
         lastname: data.lastname || '',
-        dob: data.dob.toUTCString(),
+        dob: data.dob,
         birthday: format(new Date(data.dob), 'dd MMM'),
         message: data.message || '',
         phone: Number(data.phone),

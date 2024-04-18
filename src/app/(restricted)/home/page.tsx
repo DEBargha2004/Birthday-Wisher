@@ -78,8 +78,10 @@ export default function Page () {
           {wishes?.map(wish => (
             <TableRow key={wish._id}>
               {wishesTable.map(item => (
-                <TableCell key={item.id}>
-                  {item.process(wish[item.id as keyof typeof wish]) || '—'}
+                <TableCell key={item.id} className='max-w-[400px]'>
+                  <div className='line-clamp-6'>
+                    {item.process(wish[item.id as keyof typeof wish]) || '—'}
+                  </div>
                 </TableCell>
               ))}
               <TableCell>
@@ -99,7 +101,7 @@ export default function Page () {
                       <DialogTrigger asChild>
                         <ContextMenuItem onSelect={e => e.preventDefault()}>
                           <Trash2 className='mr-1 h-4 w-4' />
-                          &nbsp; Delete Wish
+                          &nbsp; Delete
                         </ContextMenuItem>
                       </DialogTrigger>
                       <DialogContent>

@@ -7,5 +7,8 @@ export const userProfileSchema = z.object({
     .string({ required_error: 'Email is required' })
     .email({ message: 'Invalid email address' }),
   phone: z.number({ required_error: 'Phone number is required' }),
-  resend_api_key: z.string({ required_error: 'Resend API key is required' })
+  resend_api_key: z.string({ required_error: 'Resend API key is required' }),
+  genai_api_key: z.string({
+    required_error: 'Google Generative AI API key is required'
+  })
 })

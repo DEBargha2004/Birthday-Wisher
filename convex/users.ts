@@ -40,7 +40,8 @@ export const updateUser = mutation({
     lastname: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.number()),
-    resend_api_key: v.optional(v.string())
+    resend_api_key: v.optional(v.string()),
+    genai_api_key: v.optional(v.string())
   },
   async handler (ctx, args) {
     const userDoc = await ctx.db

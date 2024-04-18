@@ -17,7 +17,7 @@ export default async function handleEditWish (
   const wish = await fetchMutation(api.wishes.checkWishWithId, {
     id: data.wish_id
   })
-  console.log(wish)
+  // console.log(wish)
   if (user?.id) {
     if (!wish) {
       return {
@@ -28,7 +28,7 @@ export default async function handleEditWish (
         }
       }
     } else {
-      console.log(data)
+      // console.log(data)
 
       await fetchMutation(api.wishes.updateWish, {
         wish_id: wish._id,
@@ -36,7 +36,7 @@ export default async function handleEditWish (
         ...(data.lastname ? { lastName: data.lastname } : {}),
         ...(data.dob
           ? {
-              dob: data.dob.toUTCString(),
+              dob: data.dob,
               birthday: format(new Date(data.dob), 'dd MMM')
             }
           : {}),

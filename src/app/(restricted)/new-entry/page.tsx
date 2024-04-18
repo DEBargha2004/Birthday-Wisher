@@ -11,14 +11,14 @@ export default function Page () {
   const { toast } = useToast()
   async function handleSubmit (data: z.infer<typeof wishSchema>) {
     const res = await handleNewWishSubmit(data)
-    setTimeout(() => {
-      redirect('/home')
-    }, 2500)
+
     toast({
       title: res.msg.title,
       description: res.msg.description,
       variant: res.success ? 'default' : 'destructive'
     })
+
+    setTimeout(() => (window.location.href = '/home'), 3000)
   }
 
   return (

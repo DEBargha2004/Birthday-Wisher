@@ -15,17 +15,14 @@ import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { CalendarDays, Loader2 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Calendar } from '../ui/calendar'
-import { ChangeEvent, useEffect, useMemo, useState } from 'react'
-import { format, parse } from 'date-fns'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '../ui/select'
+import { useEffect, useState } from 'react'
+import { format } from 'date-fns'
+
+import { useAction } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
+import { useToast } from '../ui/use-toast'
+import { useUser } from '@clerk/nextjs'
+import CustomCalendar from './custom-calendar'
 
 export default function EntryForm ({
   defaultValues,
@@ -37,31 +34,50 @@ export default function EntryForm ({
   const form = useForm<z.infer<typeof wishSchema>>({
     resolver: zodResolver(wishSchema)
   })
+  const { toast } = useToast()
+  const { user } = useUser()
 
-  const [dateObj, setDateObj] = useState({
-    year: new Date().getFullYear(),
-    month: new Date().getMonth()
+  const [prompt, setPrompt] = useState('')
+  const [loading, setLoading] = useState({
+    message_generate: false
   })
 
-  const months = useMemo(() => {
-    return [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ]
-  }, [])
+  const getWishMessage = useAction(api.wishes.generateWishMessage)
+
+  const handleCreateWishMessage = async () => {
+    setLoading(prev => ({ ...prev, message_generate: true }))
+    try {
+      const res = await getWishMessage({
+        prompt,
+        id: user?.id || '',
+        dob: format(new Date(form.getValues('dob')), 'PPPP'),
+        user_name: form.getValues('firstname')
+      })
+
+      if (res.success) {
+        form.setValue('message', res.message)
+      } else {
+        toast({
+          title: res.title,
+          description: res.description,
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      // console.log(error)
+
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again later',
+        variant: 'destructive'
+      })
+    }
+
+    setLoading(prev => ({ ...prev, message_generate: false }))
+  }
 
   useEffect(() => {
-    form.setValue('dob', new Date(defaultValues?.dob || ''))
+    form.setValue('dob', defaultValues?.dob || '')
     form.setValue('phone', defaultValues?.phone || '')
     form.setValue('email', defaultValues?.email || '')
     form.setValue('firstname', defaultValues?.firstname || '')
@@ -132,91 +148,16 @@ export default function EntryForm ({
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button className='w-full flex justify-between'>
-                          {field.value?.toDateString() || 'Enter Date Of Birth'}
+                          {field.value
+                            ? format(new Date(field.value), 'PPPP')
+                            : 'Enter Date Of Birth'}
                           <CalendarDays className='h-5' />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent>
-                        <div className='w-full flex justify-evenly items-center gap-2'>
-                          <Select
-                            onValueChange={val =>
-                              setDateObj(prev => ({
-                                ...prev,
-                                month: parseInt(val)
-                              }))
-                            }
-                            value={dateObj.month.toString()}
-                          >
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Month' />
-                            </SelectTrigger>
-                            <SelectContent className='max-h-80'>
-                              <SelectGroup>
-                                {months.map((month, month_idx) => (
-                                  <SelectItem
-                                    value={(month_idx + 1).toString()}
-                                    key={month}
-                                  >
-                                    {month}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                          <Select
-                            onValueChange={val =>
-                              setDateObj(prev => ({
-                                ...prev,
-                                year: parseInt(val)
-                              }))
-                            }
-                            value={dateObj.year.toString()}
-                          >
-                            <SelectTrigger className='w-full'>
-                              <SelectValue placeholder='Year' />
-                            </SelectTrigger>
-                            <SelectContent className='max-h-80'>
-                              <SelectGroup>
-                                {Array.from(
-                                  {
-                                    length: new Date().getFullYear() + 1 - 1900
-                                  },
-                                  (_, i) => i + 1900
-                                ).map(year => (
-                                  <SelectItem
-                                    value={year.toString()}
-                                    key={year}
-                                  >
-                                    {year}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={date =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                          month={
-                            new Date(
-                              dateObj.month.toString() +
-                                '/01/' +
-                                dateObj.year.toString()
-                            )
-                          }
-                          onMonthChange={date => {
-                            console.log(date.getMonth())
-
-                            setDateObj(prev => ({
-                              ...prev,
-                              month: date.getMonth() + 1,
-                              year: date.getFullYear()
-                            }))
-                          }}
+                        <CustomCalendar
+                          fieldValue={field.value}
+                          onDateSelect={field.onChange}
                         />
                       </PopoverContent>
                     </Popover>
@@ -232,7 +173,28 @@ export default function EntryForm ({
                 <FormItem>
                   <FormLabel>Message (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea id={field.name} className='w-full' {...field} />
+                    <>
+                      <Textarea id={field.name} className='w-full' {...field} />
+                      <div className='w-full flex items-center gap-2'>
+                        <Input
+                          value={prompt}
+                          onChange={e => setPrompt(e.target.value)}
+                          placeholder='Custom Instructions'
+                        />
+                        <Button
+                          disabled={
+                            !(form.watch('firstname') && form.watch('dob'))
+                          }
+                          onClick={handleCreateWishMessage}
+                          type='button'
+                        >
+                          {loading.message_generate ? (
+                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                          ) : null}
+                          Gen AI
+                        </Button>
+                      </div>
+                    </>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

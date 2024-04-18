@@ -39,6 +39,8 @@ export default function Page ({ params }: { params: { wishid: Id<'wishes'> } }) 
       title: res.msg.title,
       description: res.msg.description
     })
+
+    setTimeout(() => (window.location.href = '/home'), 3000)
   }
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function Page ({ params }: { params: { wishid: Id<'wishes'> } }) 
       setDefaultWishData({
         firstname: data?.firstname || '',
         lastname: data?.lastname || '',
-        dob: new Date(data?.dob || ''),
+        dob: data?.dob || '',
         message: data?.message || '',
         phone: data?.phone?.toString() || '',
         email: data?.email || ''

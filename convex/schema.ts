@@ -8,7 +8,8 @@ export default defineSchema({
     lastname: v.optional(v.string()),
     email: v.string(),
     phone: v.optional(v.number()),
-    resend_api_key: v.optional(v.string())
+    resend_api_key: v.optional(v.string()),
+    genai_api_key: v.optional(v.string())
   }),
   wishes: defineTable({
     creator_id: v.string(),

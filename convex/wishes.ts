@@ -1,8 +1,14 @@
 import { v } from 'convex/values'
-import { internalMutation, mutation, query } from './_generated/server'
+import { action, internalMutation, mutation, query } from './_generated/server'
 import { format } from 'date-fns'
 import _ from 'lodash'
 import { Resend } from 'resend'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import { api, internal } from './_generated/api'
+import {
+  wishTemplateForNoUserPrompt,
+  wishTemplateForUserPrompt
+} from '../src/lib/templates'
 
 export const getWishes = query({
   args: {
@@ -58,7 +64,7 @@ export const checkWish = mutation({
 
 export const makeWish = internalMutation({
   handler: async (ctx, args) => {
-    const timestamp = new Date().getTime()
+    const timestamp = new Date()
     const date = format(timestamp, 'dd MMM')
     let wishes = await ctx.db
       .query('wishes')
@@ -111,7 +117,7 @@ export const makeWish = internalMutation({
         })
       }
     })
-    console.log(all_wishes)
+    // console.log(all_wishes)
     return all_wishes
   }
 })
@@ -130,7 +136,7 @@ export const getWish = mutation({
     wish_id: v.id('wishes')
   },
   async handler (ctx, args) {
-    console.log(args)
+    // console.log(args)
     const wish = await ctx.db
       .query('wishes')
       .filter(q => q.eq(q.field('_id'), args.wish_id))
@@ -173,5 +179,70 @@ export const checkWishWithId = mutation({
       .filter(q => q.eq(q.field('_id'), args.id))
       .first()
     return wish
+  }
+})
+
+export const generateWishMessage = action({
+  args: {
+    prompt: v.optional(v.string()),
+    id: v.string(),
+    user_name: v.string(),
+    dob: v.string()
+  },
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    success: boolean
+    title?: string
+    description?: string
+    message?: string
+  }> => {
+    if (args.id) {
+      const res = await ctx.runMutation(api.users.getUser, {
+        id: args.id
+      })
+
+      if (res?.genai_api_key) {
+        const genAI = new GoogleGenerativeAI(res.genai_api_key)
+        const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+
+        const result = await model.generateContent(
+          args.prompt
+            ? wishTemplateForUserPrompt(
+                args.user_name,
+                args.prompt,
+                args.dob,
+                res.firstname
+              )
+            : wishTemplateForNoUserPrompt(
+                args.user_name,
+                args.dob,
+                res.firstname
+              )
+        )
+        const response = result.response
+        const text = response.text()
+
+        return {
+          success: true,
+          title: 'Wish Generated',
+          description: 'Wish Generated Successfully',
+          message: text
+        }
+      } else {
+        return {
+          success: false,
+          title: 'API Key Not Found',
+          description: 'Gen AI API key not found. Please add it in your profile'
+        }
+      }
+    } else {
+      return {
+        success: false,
+        title: 'User Not Found',
+        description: 'Please login again or refresh the page'
+      }
+    }
   }
 })

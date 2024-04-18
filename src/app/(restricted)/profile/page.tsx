@@ -23,7 +23,10 @@ import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 
 export default function Page () {
-  const [showApiKey, setShowApiKey] = useState(false)
+  const [showApiKey, setShowApiKey] = useState({
+    resend_api_key: false,
+    genai_api_key: false
+  })
   const { user } = useUser()
   const router = useRouter()
   const form = useForm<z.infer<typeof userProfileSchema>>({
@@ -34,7 +37,7 @@ export default function Page () {
   const updateUser = useMutation(api.users.updateUser)
 
   const handleSubmit = async (data: z.infer<typeof userProfileSchema>) => {
-    console.log(data)
+    // console.log(data)
 
     if (user) {
       const res = await updateUser({ user_id: user.id, ...data })
@@ -152,13 +155,48 @@ export default function Page () {
                     <Input
                       placeholder='Resend API Key'
                       {...field}
-                      type={showApiKey ? 'text' : 'password'}
+                      type={showApiKey.resend_api_key ? 'text' : 'password'}
                     />
                     <Input
                       type='checkbox'
                       className='h-3 mx-0 w-fit '
-                      checked={showApiKey}
-                      onChange={() => setShowApiKey(!showApiKey)}
+                      checked={showApiKey.resend_api_key}
+                      onChange={() =>
+                        setShowApiKey(prev => ({
+                          ...prev,
+                          resend_api_key: !prev.resend_api_key
+                        }))
+                      }
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='genai_api_key'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>GenAI API Key</FormLabel>
+                <FormControl className=''>
+                  <div className='w-full flex flex-col items-start  gap-2'>
+                    <Input
+                      placeholder='Google Generative AI API Key'
+                      {...field}
+                      type={showApiKey.genai_api_key ? 'text' : 'password'}
+                    />
+                    <Input
+                      type='checkbox'
+                      className='h-3 mx-0 w-fit '
+                      checked={showApiKey.genai_api_key}
+                      onChange={() =>
+                        setShowApiKey(prev => ({
+                          ...prev,
+                          genai_api_key: !prev.genai_api_key
+                        }))
+                      }
                     />
                   </div>
                 </FormControl>
