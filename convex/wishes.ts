@@ -133,7 +133,7 @@ export const makeWish = internalAction({
             w.wishes.map(async uw => {
               if (uw.email) {
                 const x = await resend.emails.send({
-                  from: 'Acme <onboarding@resend.dev>',
+                  from: `${w.user.user_info?.firstname} <onboarding@resend.dev>`,
                   to: uw.email,
                   subject: 'Birthday Wish',
                   html: `<p style="white-space: pre-wrap">${
