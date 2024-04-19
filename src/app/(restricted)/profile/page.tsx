@@ -76,144 +76,146 @@ export default function Page () {
     }
   }, [user])
   return (
-    <section className='h-full w-full flex flex-col justify-start items-center'>
-      <h1 className='text-3xl mb-8 w-1/3'>Profile</h1>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className='w-1/3 space-y-2'
-        >
-          <FormField
-            control={form.control}
-            name='firstname'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder='First Name' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='lastname'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder='Last Name' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='email'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder='Email' type='email' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='phone'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder='Phone'
-                    type='number'
-                    {...field}
-                    onChange={e => {
-                      if (e.target.value.length <= 10) {
-                        field.onChange(Number(e.target.value))
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='resend_api_key'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Resend API Key</FormLabel>
-                <FormControl className=''>
-                  <div className='w-full flex flex-col items-start  gap-2'>
+    <section className='h-full w-full flex flex-col justify-center items-center'>
+      <div className='h-full lg:w-1/3 md:w-1/2 w-full'>
+        <h1 className='text-3xl mb-8 w-1/3'>Profile</h1>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className=' space-y-2'
+          >
+            <FormField
+              control={form.control}
+              name='firstname'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder='First Name' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='lastname'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Last Name' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Email' type='email' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='phone'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
                     <Input
-                      placeholder='Resend API Key'
+                      placeholder='Phone'
+                      type='number'
                       {...field}
-                      type={showApiKey.resend_api_key ? 'text' : 'password'}
+                      onChange={e => {
+                        if (e.target.value.length <= 10) {
+                          field.onChange(Number(e.target.value))
+                        }
+                      }}
                     />
-                    <Input
-                      type='checkbox'
-                      className='h-3 mx-0 w-fit '
-                      checked={showApiKey.resend_api_key}
-                      onChange={() =>
-                        setShowApiKey(prev => ({
-                          ...prev,
-                          resend_api_key: !prev.resend_api_key
-                        }))
-                      }
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='genai_api_key'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>GenAI API Key</FormLabel>
-                <FormControl className=''>
-                  <div className='w-full flex flex-col items-start  gap-2'>
-                    <Input
-                      placeholder='Google Generative AI API Key'
-                      {...field}
-                      type={showApiKey.genai_api_key ? 'text' : 'password'}
-                    />
-                    <Input
-                      type='checkbox'
-                      className='h-3 mx-0 w-fit '
-                      checked={showApiKey.genai_api_key}
-                      onChange={() =>
-                        setShowApiKey(prev => ({
-                          ...prev,
-                          genai_api_key: !prev.genai_api_key
-                        }))
-                      }
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className='w-full'>
-            <Button type='submit' variant={'default'} className='w-full my-5'>
-              {form.formState.isSubmitting ? (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              ) : null}
-              Submit
-            </Button>
-          </div>
-        </form>
-      </Form>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='resend_api_key'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Resend API Key</FormLabel>
+                  <FormControl className=''>
+                    <div className='w-full flex flex-col items-start  gap-2'>
+                      <Input
+                        placeholder='Resend API Key'
+                        {...field}
+                        type={showApiKey.resend_api_key ? 'text' : 'password'}
+                      />
+                      <Input
+                        type='checkbox'
+                        className='h-3 mx-0 w-fit '
+                        checked={showApiKey.resend_api_key}
+                        onChange={() =>
+                          setShowApiKey(prev => ({
+                            ...prev,
+                            resend_api_key: !prev.resend_api_key
+                          }))
+                        }
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='genai_api_key'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>GenAI API Key</FormLabel>
+                  <FormControl className=''>
+                    <div className='w-full flex flex-col items-start  gap-2'>
+                      <Input
+                        placeholder='Google Generative AI API Key'
+                        {...field}
+                        type={showApiKey.genai_api_key ? 'text' : 'password'}
+                      />
+                      <Input
+                        type='checkbox'
+                        className='h-3 mx-0 w-fit '
+                        checked={showApiKey.genai_api_key}
+                        onChange={() =>
+                          setShowApiKey(prev => ({
+                            ...prev,
+                            genai_api_key: !prev.genai_api_key
+                          }))
+                        }
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className='w-full'>
+              <Button type='submit' variant={'default'} className='w-full my-5'>
+                {form.formState.isSubmitting ? (
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                ) : null}
+                Submit
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </div>
     </section>
   )
 }

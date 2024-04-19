@@ -1,5 +1,11 @@
 import { v } from 'convex/values'
-import { action, internalMutation, mutation, query } from './_generated/server'
+import {
+  action,
+  internalAction,
+  internalMutation,
+  mutation,
+  query
+} from './_generated/server'
 import { format } from 'date-fns'
 import _ from 'lodash'
 import { Resend } from 'resend'
@@ -62,24 +68,48 @@ export const checkWish = mutation({
   }
 })
 
-export const makeWish = internalMutation({
+export const getWishesOfDay = mutation({
+  args: {
+    date: v.string()
+  },
+  handler: async (ctx, args) => {
+    const wishes = await ctx.db
+      .query('wishes')
+      .filter(q => q.eq(q.field('birthday'), args.date))
+      .collect()
+    return wishes
+  }
+})
+
+export const updateLastWished = mutation({
+  args: {
+    wish_id: v.id('wishes'),
+    last_wished: v.string()
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.wish_id, {
+      last_wished: args.last_wished
+    })
+  }
+})
+
+export const makeWish = internalAction({
   handler: async (ctx, args) => {
     const timestamp = new Date()
     const date = format(timestamp, 'dd MMM')
-    let wishes = await ctx.db
-      .query('wishes')
-      .filter(q => q.eq(q.field('birthday'), date))
-      .collect()
+
+    let wishes = await ctx.runMutation(api.wishes.getWishesOfDay, {
+      date
+    })
     const uniq_creators_wish = _.uniqBy(wishes, 'creator_id')
 
     const uniq_creators_id = uniq_creators_wish.map(w => w.creator_id)
 
     const uniq_creators_info = await Promise.all(
       uniq_creators_id.map(async id => {
-        const user = await ctx.db
-          .query('users')
-          .filter(q => q.eq(q.field('user_id'), id))
-          .first()
+        const user = await ctx.runMutation(api.users.getUser, {
+          id: id
+        })
         return {
           user_info: user
         }
@@ -95,30 +125,43 @@ export const makeWish = internalMutation({
       }
     })
 
-    all_wishes.map(w => {
-      const resend = new Resend(w.user.user_info?.resend_api_key)
-      if (w.user.user_info?.email && w.user.user_info?.resend_api_key) {
-        w.wishes.map(async uw => {
-          if (uw.email) {
-            await resend.emails.send({
-              from: w.user.user_info!.email,
-              to: uw.email,
-              subject: 'Birthday Wish',
-              html: `<p>${
-                uw.message ||
-                `Happy Birthday ${uw.firstname} from ${w.user.user_info?.firstname}`
-              }</p>`
-            })
+    await Promise.all(
+      all_wishes.map(async w => {
+        const resend = new Resend(w.user.user_info?.resend_api_key)
+        if (w.user.user_info?.email && w.user.user_info?.resend_api_key) {
+          await Promise.all(
+            w.wishes.map(async uw => {
+              if (uw.email) {
+                const x = await resend.emails.send({
+                  from: 'Acme <onboarding@resend.dev>',
+                  to: uw.email,
+                  subject: 'Birthday Wish',
+                  html: `<p style="white-space: pre-wrap">${
+                    uw.message ||
+                    `Happy Birthday ${uw.firstname} from ${w.user.user_info?.firstname}`
+                  }</p>`
+                })
+                console.log(x)
+                if (!x.error) {
+                  const wished_timestamp = format(
+                    new Date(),
+                    'dd/MM/yyyy HH:mm:ss'
+                  )
+                  await ctx.runMutation(api.wishes.updateLastWished, {
+                    wish_id: uw._id,
+                    last_wished: wished_timestamp
+                  })
+                }
 
-            await ctx.db.patch(uw._id, {
-              last_wished: format(timestamp, 'dd MMM')
+                console.log(uw)
+              }
             })
-          }
-        })
-      }
-    })
-    // console.log(all_wishes)
-    return all_wishes
+          )
+        }
+      })
+    )
+    // // console.log(all_wishes)
+    // return all_wishes
   }
 })
 
