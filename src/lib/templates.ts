@@ -6,7 +6,7 @@ export const wishTemplateForNoUserPrompt = (
   sender_name: string
 ) => {
   return `
-  Write a warm and sincere birthday wish for ${recipient_name}, who is having their date of birth on ${birth_date}.
+  Write a warm and sincere birthday wish for ${recipient_name}, who is having their birthday on ${birth_date}.
 
   If no custom instructions are provided, please include the following in the message:
 
@@ -26,7 +26,7 @@ export const wishTemplateForUserPrompt = (
   sender_name: string
 ) => {
   return `
-  Write a warm and sincere birthday wish for ${recipient_name}, who is having their date of birth on ${birth_date}. Please follow these instructions:
+  Write a warm and sincere birthday wish for ${recipient_name}, who is having their birthday on ${birth_date}. Please follow these instructions:
 
   ${user_prompt}
 

@@ -9,7 +9,7 @@ import { fetchMutation } from 'convex/nextjs'
 import { format } from 'date-fns'
 
 export default async function handleNewWishSubmit (
-  data: z.infer<typeof wishSchema>
+  data: z.infer<typeof wishSchema> & { birthday: string }
 ): Promise<ResponseType> {
   const user = await currentUser()
 
@@ -33,7 +33,7 @@ export default async function handleNewWishSubmit (
         firstname: data.firstname,
         lastname: data.lastname || '',
         dob: data.dob,
-        birthday: format(new Date(data.dob), 'dd MMM'),
+        birthday: data.birthday,
         message: data.message || '',
         phone: Number(data.phone),
         email: data.email

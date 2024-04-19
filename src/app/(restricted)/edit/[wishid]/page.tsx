@@ -10,6 +10,7 @@ import { api } from '../../../../../convex/_generated/api'
 import { Id } from '../../../../../convex/_generated/dataModel'
 import handleEditWish from '@/server-actions/handle-edit-wish'
 import { useToast } from '@/components/ui/use-toast'
+import { format } from 'date-fns'
 
 export default function Page ({ params }: { params: { wishid: Id<'wishes'> } }) {
   const checkWishWithId = useMutation(api.wishes.checkWishWithId)
@@ -27,7 +28,9 @@ export default function Page ({ params }: { params: { wishid: Id<'wishes'> } }) 
       ...(defaultWishData?.lastname !== data.lastname
         ? { lastname: data.lastname }
         : {}),
-      ...(defaultWishData?.dob !== data.dob ? { dob: data.dob } : {}),
+      ...(defaultWishData?.dob !== data.dob
+        ? { dob: data.dob, birthday: format(new Date(data.dob), 'dd MMM') }
+        : {}),
       ...(defaultWishData?.message !== data.message
         ? { message: data.message }
         : {}),

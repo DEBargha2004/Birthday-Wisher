@@ -50,7 +50,7 @@ export default function EntryForm ({
       const res = await getWishMessage({
         prompt,
         id: user?.id || '',
-        dob: format(new Date(form.getValues('dob')), 'PPPP'),
+        dob: format(new Date(form.getValues('dob')), 'dd MMM'),
         user_name: form.getValues('firstname')
       })
 

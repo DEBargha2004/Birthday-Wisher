@@ -10,7 +10,9 @@ import { format } from 'date-fns'
 import { Id } from '../../convex/_generated/dataModel'
 
 export default async function handleEditWish (
-  data: Partial<z.infer<typeof wishSchema>> & { wish_id: Id<'wishes'> }
+  data: Partial<z.infer<typeof wishSchema> & { birthday: string }> & {
+    wish_id: Id<'wishes'>
+  }
 ): Promise<ResponseType> {
   const user = await currentUser()
 
@@ -37,7 +39,7 @@ export default async function handleEditWish (
         ...(data.dob
           ? {
               dob: data.dob,
-              birthday: format(new Date(data.dob), 'dd MMM')
+              birthday: data.birthday
             }
           : {}),
         ...(data.message ? { message: data.message } : {}),
